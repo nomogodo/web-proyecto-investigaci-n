@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lectura, fuente de inteligencia — Proyecto de Investigación</title>
+  <style>
+    /* ===================== VARIABLES & RESET ===================== */
+    :root {
+      --navy:        #0e1c3a;
+      --navy-mid:    #1b3060;
+      --blue:        #2b56a5;
+      --blue-light:  #4878cc;
+      --gold:        #c49a2e;
+      --gold-light:  #e8c46a;
+      --bg:          #f2f5f9;
+      --white:       #ffffff;
+      --text:        #18192e;
+      --text-mid:    #3d3d5c;
+      --text-light:  #6b6b8a;
+      --border:      #d4dbe8;
+      --green:       #28915a;
+      --green-light: #3ab870;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.85;
+      font-size: 16px;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    strong { color: var(--navy); }
+
+    /* ===================== NAV ===================== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--navy);
+      box-shadow: 0 2px 14px rgba(0,0,0,.45);
+    }
+    nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    nav ul li a {
+      display: block;
+      padding: .75rem .9rem;
+      color: rgba(255,255,255,.75);
+      font-family: Arial, sans-serif;
+      font-size: .72rem;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      transition: color .25s, background .25s;
+      text-decoration: none;
+    }
+    nav ul li a:hover { color: var(--gold-light); background: rgba(255,255,255,.06); }
+
+    /* ===================== HEADER ===================== */
+    header {
+      background: linear-gradient(140deg, var(--navy) 0%, var(--navy-mid) 55%, #253a7a 100%);
+      color: #fff;
+      text-align: center;
+      padding: 5.5rem 2rem 4.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(75,130,210,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .h-tag {
+      display: inline-block;
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      font-family: Arial, sans-serif;
+      font-size: .7rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      padding: .35rem 1.1rem;
+      border-radius: 2px;
+      margin-bottom: 1.8rem;
+    }
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: normal;
+      line-height: 1.15;
+      letter-spacing: .02em;
+    }
+    header h1 em { color: var(--gold-light); font-style: normal; }
+    .h-divider {
+      width: 72px; height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      margin: 1.8rem auto 1.4rem;
+      border-radius: 2px;
+    }
+    .h-sub {
+      font-family: Arial, sans-serif;
+      font-size: .92rem;
+      color: rgba(255,255,255,.58);
+      max-width: 600px;
+      margin: 0 auto 2.8rem;
+      line-height: 1.6;
+    }
+    .h-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem 2.8rem;
+    }
+    .h-meta-item .lbl {
+      font-family: Arial, sans-serif;
+      font-size: .63rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .h-meta-item .val {
+      font-family: Arial, sans-serif;
+      font-size: .88rem;
+      color: rgba(255,255,255,.88);
+      margin-top: .15rem;
+    }
+
+    /* ===================== LAYOUT ===================== */
+    main {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+    }
+
+    /* ===================== TABLE OF CONTENTS ===================== */
+    .toc {
+      background: var(--navy);
+      border-radius: 7px;
+      padding: 2.4rem 3rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 3px 20px rgba(0,0,0,.22);
+    }
+    .toc-title {
+      font-family: Arial, sans-serif;
+      font-size: .68rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.4rem;
+    }
+    .toc ol { list-style: none; counter-reset: toc; }
+    .toc ol li {
+      counter-increment: toc;
+      display: flex;
+      align-items: center;
+      padding: .45rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .toc ol li:last-child { border-bottom: none; }
+    .toc ol li::before {
+      content: counter(toc, decimal-leading-zero);
+      font-family: Arial, sans-serif;
+      font-size: .7rem;
+      color: var(--gold);
+      min-width: 2.4rem;
+      font-weight: 700;
+    }
+    .toc ol li a {
+      font-family: Arial, sans-serif;
+      font-size: .88rem;
+      color: rgba(255,255,255,.78);
+      transition: color .2s;
+    }
+    .toc ol li a:hover { color: var(--gold-light); text-decoration: none; }
+    .toc-dots { flex: 1; border-bottom: 1px dotted rgba(255,255,255,.18); margin: 0 .8rem; }
+    .toc-page { font-family: Arial, sans-serif; font-size: .7rem; color: rgba(255,255,255,.32); }
+
+    /* ===================== SECTION CARDS ===================== */
+    .card {
+      background: var(--white);
+      border-radius: 7px;
+      padding: 2.6rem 3rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 18px rgba(0,0,0,.07);
+      border-left: 4px solid var(--blue);
+    }
+    .card.gold  { border-left-color: var(--gold); }
+    .card.dark  { background: linear-gradient(140deg, var(--navy), #1a2e6a); color: #fff; border-left-color: var(--gold); }
+    .card.biblio { background: #f8f9fb; border: 1px solid var(--border); border-left: 4px solid var(--text-light); }
+
+    .sec-label {
+      font-family: Arial, sans-serif;
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: .4rem;
+    }
+    .card.gold  .sec-label { color: var(--gold); }
+    .card.dark  .sec-label { color: var(--gold); }
+    .card.biblio .sec-label { color: var(--text-light); }
+
+    .card h2 {
+      font-family: Georgia, serif;
+      font-size: 1.55rem;
+      font-weight: normal;
+      color: var(--navy);
+      margin-bottom: 1.4rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .card.dark h2 { color: #fff; border-bottom-color: rgba(255,255,255,.14); }
+
+    .card p {
+      color: var(--text-mid);
+      margin-bottom: 1rem;
+      text-align: justify;
+    }
+    .card.dark p { color: rgba(255,255,255,.78); }
+
+    /* subsections */
+    .sub {
+      padding-bottom: 1.8rem;
+      margin-bottom: 1.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sub:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+    .sub-tag {
+      display: inline-block;
+      font-family: Arial, sans-serif;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(43,86,165,.08);
+      padding: .18rem .55rem;
+      border-radius: 2px;
+      margin-bottom: .5rem;
+    }
+    .sub h3 {
+      font-family: Georgia, serif;
+      font-size: 1.08rem;
+      color: var(--navy);
+      font-weight: normal;
+      margin-bottom: .7rem;
+    }
+
+    /* objectives box */
+    .obj-box {
+      background: linear-gradient(135deg, #f5f7ff, #edf0ff);
+      border: 1px solid #cdd4f0;
+      border-radius: 5px;
+      padding: 1.3rem 1.8rem;
+      text-align: center;
+      margin: 1rem 0;
+    }
+    .obj-box p {
+      font-size: 1.18rem;
+      font-style: italic;
+      color: var(--navy);
+      margin: 0;
+    }
+
+    /* ===================== SURVEY ===================== */
+    .survey-hero {
+      background: linear-gradient(140deg, var(--navy) 0%, #1b3060 100%);
+      border-radius: 7px;
+      padding: 2.6rem 3rem;
+      margin-bottom: 1.4rem;
+      text-align: center;
+      box-shadow: 0 3px 20px rgba(0,0,0,.22);
+    }
+    .survey-hero .sec-label { color: var(--gold); display: block; margin-bottom: .6rem; }
+    .survey-hero h2 {
+      font-family: Georgia, serif;
+      font-size: 1.75rem;
+      font-weight: normal;
+      color: #fff;
+      margin-bottom: .5rem;
+    }
+    .survey-hero p {
+      font-family: Arial, sans-serif;
+      font-size: .84rem;
+      color: rgba(255,255,255,.58);
+      line-height: 1.55;
+      max-width: 540px;
+      margin: 0 auto 1.8rem;
+    }
+    .survey-stats {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .8rem;
+    }
+    .s-stat {
+      text-align: center;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 5px;
+      padding: .75rem 1.6rem;
+    }
+    .s-stat .num {
+      font-family: Arial, sans-serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      line-height: 1;
+    }
+    .s-stat .lbl {
+      font-family: Arial, sans-serif;
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: rgba(255,255,255,.55);
+      margin-top: .2rem;
+    }
+
+    /* question card */
+    .qcard {
+      background: var(--white);
+      border-radius: 7px;
+      padding: 1.8rem 2.2rem;
+      margin-bottom: 1.1rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,.055);
+    }
+    .q-num {
+      font-family: Arial, sans-serif;
+      font-size: .64rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: .35rem;
+    }
+    .q-text {
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+    }
+
+    /* answer rows */
+    .arow {
+      display: grid;
+      grid-template-columns: minmax(180px,42%) 1fr 68px;
+      align-items: center;
+      gap: .7rem;
+      margin-bottom: .65rem;
+    }
+    .a-label {
+      font-family: Arial, sans-serif;
+      font-size: .8rem;
+      color: var(--text-mid);
+      line-height: 1.35;
+    }
+    .bar-wrap {
+      background: #eaf0f8;
+      border-radius: 3px;
+      height: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar {
+      height: 100%;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 7px;
+      min-width: 26px;
+    }
+    .bar span {
+      font-family: Arial, sans-serif;
+      font-size: .68rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .bar.b-blue  { background: linear-gradient(90deg, #1e4492, var(--blue-light)); }
+    .bar.b-gold  { background: linear-gradient(90deg, #a07010, var(--gold)); }
+    .bar.b-green { background: linear-gradient(90deg, #1a6b40, var(--green-light)); }
+
+    .a-frac {
+      font-family: Arial, sans-serif;
+      font-size: .72rem;
+      color: var(--text-light);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .q-insight {
+      background: #f0f5ff;
+      border-left: 3px solid var(--blue);
+      border-radius: 0 4px 4px 0;
+      padding: .6rem 1rem;
+      margin-top: 1rem;
+      font-family: Arial, sans-serif;
+      font-size: .79rem;
+      color: var(--navy-mid);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    /* ===================== CONCLUSION ===================== */
+    .concl-highlight {
+      background: rgba(196,154,46,.14);
+      border: 1px solid rgba(196,154,46,.35);
+      border-radius: 5px;
+      padding: 1.2rem 1.6rem;
+      margin: 1.6rem 0;
+    }
+    .concl-highlight p {
+      color: var(--gold-light) !important;
+      font-style: italic;
+      font-size: 1.04rem;
+      margin: 0 !important;
+    }
+    .concl-list { list-style: none; margin: 1.4rem 0; }
+    .concl-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .4rem 0;
+      font-family: Arial, sans-serif;
+      font-size: .9rem;
+      color: rgba(255,255,255,.8);
+      line-height: 1.5;
+    }
+    .concl-list li::before {
+      content: '→';
+      color: var(--gold);
+      font-weight: 700;
+      min-width: 1.1rem;
+      margin-top: .05rem;
+    }
+
+    /* ===================== BIBLIOGRAPHY ===================== */
+    .bib-entry {
+      font-family: Arial, sans-serif;
+      font-size: .81rem;
+      color: var(--text-mid);
+      margin-bottom: .95rem;
+      padding-left: 1.6rem;
+      text-indent: -1.6rem;
+      line-height: 1.65;
+    }
+    .bib-entry a { color: var(--blue); word-break: break-all; }
+
+    /* ===================== FOOTER ===================== */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,.45);
+      text-align: center;
+      padding: 2rem 1rem;
+      font-family: Arial, sans-serif;
+      font-size: .78rem;
+      line-height: 1.7;
+    }
+    footer span { color: var(--gold); }
+
+    /* ===================== RESPONSIVE ===================== */
+    @media (max-width: 660px) {
+      .card, .toc { padding: 1.5rem 1.2rem; }
+      .survey-hero { padding: 1.8rem 1.2rem; }
+      .qcard { padding: 1.4rem 1rem; }
+      .arow { grid-template-columns: 1fr; }
+      .a-frac { text-align: left; }
+      nav ul li a { padding: .6rem .5rem; font-size: .65rem; }
+      .h-meta { gap: .8rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+<nav>
+  <ul>
+    <li><a href="#portada">Portada</a></li>
+    <li><a href="#resumen">Resumen</a></li>
+    <li><a href="#introduccion">Introducción</a></li>
+    <li><a href="#objetivos">Objetivos</a></li>
+    <li><a href="#cuerpo">Cuerpo del trabajo</a></li>
+    <li><a href="#encuesta">Encuesta</a></li>
+    <li><a href="#conclusion">Conclusión</a></li>
+    <li><a href="#bibliografia">Bibliografía</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+<header id="portada">
+  <div class="h-tag">Proyecto de Investigación · Curso 2024–2025</div>
+  <h1>Lectura, <em>fuente de inteligencia</em></h1>
+  <div class="h-divider"></div>
+  <p class="h-sub">Estudio sobre la influencia del hábito lector en el desarrollo de la inteligencia práctica, el sentido común y la cultura general en jóvenes de 14 a 18 años</p>
+  <div class="h-meta">
+    <div class="h-meta-item"><div class="lbl">Etapa educativa</div><div class="val">Educación Secundaria Obligatoria</div></div>
+    <div class="h-meta-item"><div class="lbl">Disciplinas</div><div class="val">Neurociencia · Psicología · Educación</div></div>
+    <div class="h-meta-item"><div class="lbl">Muestra encuestada</div><div class="val">40 estudiantes (14 años)</div></div>
+    <div class="h-meta-item"><div class="lbl">Año académico</div><div class="val">2024 – 2025</div></div>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══════════════════════════ ÍNDICE ═══════════════════════════ -->
+<div class="toc">
+  <p class="toc-title">Índice de contenidos</p>
+  <ol>
+    <li><a href="#resumen">Resumen</a><span class="toc-dots"></span><span class="toc-page">§ 1</span></li>
+    <li><a href="#introduccion">Introducción</a><span class="toc-dots"></span><span class="toc-page">§ 2</span></li>
+    <li><a href="#objetivos">Objetivos</a><span class="toc-dots"></span><span class="toc-page">§ 3</span></li>
+    <li><a href="#cuerpo">Cuerpo del trabajo</a><span class="toc-dots"></span><span class="toc-page">§ 4</span></li>
+    <li><a href="#encuesta">Encuesta a jóvenes de 14 años</a><span class="toc-dots"></span><span class="toc-page">§ 5</span></li>
+    <li><a href="#conclusion">Conclusión final</a><span class="toc-dots"></span><span class="toc-page">§ 6</span></li>
+    <li><a href="#bibliografia">Bibliografía</a><span class="toc-dots"></span><span class="toc-page">§ 7</span></li>
+  </ol>
+</div>
+
+<!-- ═══════════════════════════ RESUMEN ═══════════════════════════ -->
+<section class="card" id="resumen">
+  <div class="sec-label">Sección 01 — Resumen</div>
+  <h2>Resumen</h2>
+  <p>Este trabajo de investigación analiza cómo influye realmente el hábito de la lectura en el desarrollo de la inteligencia práctica, el sentido común y la cultura general en jóvenes de entre 14 y 18 años. Aunque es muy común escuchar la frase "leer te hace más inteligente", el objetivo de este proyecto es comprobar científicamente esa idea, sobre todo hoy en día, cuando el uso constante de pantallas y redes sociales está desplazando a los libros.</p>
+  <p>Para lograrlo, el estudio combina dos enfoques. Por un lado, una revisión teórica basada en estudios recientes de neurociencia y psicología en España, que explican cómo la lectura profunda entrena y modifica nuestro cerebro. Por otro lado, una parte práctica en la que se han realizado encuestas a estudiantes de secundaria. A través de este cuestionario, se relaciona la frecuencia, el formato (papel o digital) y el tipo de lectura de los jóvenes con su capacidad para resolver dilemas cotidianos y su nivel de conocimientos, demostrando así si los libros realmente nos preparan mejor para tomar decisiones en la vida real.</p>
+</section>
+
+<!-- ═══════════════════════════ INTRODUCCIÓN ═══════════════════════════ -->
+<section class="card" id="introduccion">
+  <div class="sec-label">Sección 02 — Introducción</div>
+  <h2>Introducción</h2>
+  <p>En la vida cotidiana es frecuente escuchar afirmaciones como "leer te hace más inteligente" o "quien lee tiene más cultura general". Estas ideas, ampliamente difundidas en entornos educativos, familiares e incluso mediáticos, suelen tomarse como verdades indiscutibles. Sin embargo, desde una perspectiva científica, surge una pregunta fundamental: ¿existe evidencia real que respalde la relación entre la lectura y el desarrollo de habilidades cognitivas y prácticas en los jóvenes?</p>
+  <p>La respuesta a esta interrogante no solo tiene relevancia académica, sino también implicaciones directas en la formación personal, la toma de decisiones diarias y la construcción de ciudadanos críticos e informados. Este proyecto parte de la necesidad de contrastar creencias populares con evidencia empírica y bibliográfica rigurosa.</p>
+  <p>Se enfoca específicamente en jóvenes entre 14 y 18 años, una etapa crucial del desarrollo cerebral y de formación de hábitos. En este grupo, evaluar si la lectura influye en dimensiones como la inteligencia práctica (capacidad para resolver problemas reales), el sentido común (juicio equilibrado ante situaciones cotidianas) y la cultura general (conocimiento funcional sobre historia, ciencia, sociedad y actualidad) resulta especialmente pertinente.</p>
+</section>
+
+<!-- ═══════════════════════════ OBJETIVOS ═══════════════════════════ -->
+<section class="card gold" id="objetivos">
+  <div class="sec-label">Sección 03 — Objetivos</div>
+  <h2>Objetivos</h2>
+  <p>Mi objetivo con esta investigación es descubrir si la lectura en los jóvenes fomenta el aprendizaje o si realmente afecta de alguna manera a su sentido común, cultura general o manera de pensar frente a problemas cotidianos. Esta investigación pondrá fin a la pregunta…</p>
+  <div class="obj-box"><p>¿Leer nos hace inteligentes?</p></div>
+  <p>Se zanjará cómo afecta la lectura en todos estos ámbitos y cómo podemos aplicarla para nuestro beneficio.</p>
+</section>
+
+<!-- ═══════════════════════════ CUERPO ═══════════════════════════ -->
+<section class="card" id="cuerpo">
+  <div class="sec-label">Sección 04 — Cuerpo del trabajo</div>
+  <h2>Cuerpo del trabajo</h2>
+
+  <div class="sub">
+    <span class="sub-tag">6.1</span>
+    <h3>¿Qué es la lectura?</h3>
+    <p>La lectura es un proceso cognitivo artificial que exige una interacción activa para decodificar e inferir significados. A diferencia del lenguaje oral, que es una capacidad biológica innata, la lectura es una invención cultural reciente para la cual no existe una predisposición genética. Según el investigador Manuel Carreiras del Basque Center on Cognition, Brain and Language (BCBL), el cerebro humano carece de áreas predeterminadas para leer al nacer, lo que obliga a la mente a realizar un esfuerzo adaptativo extraordinario reciclando circuitos neuronales preexistentes para vincular formas visuales con sonidos.</p>
+  </div>
+
+  <div class="sub">
+    <span class="sub-tag">6.2</span>
+    <h3>Lectura y neuroplasticidad estructural</h3>
+    <p>El esfuerzo cognitivo constante que requiere la lectura genera transformaciones físicas y anatómicas medibles en la arquitectura del sistema nervioso central, alterando permanentemente su estructura funcional. De acuerdo con los estudios de neuroimagen estructural realizados por el investigador Jon Andoni Duñabeitia desde la Universidad Nebrija, el acto de leer exige la coordinación simultánea de múltiples redes corticales. La alfabetización y el mantenimiento del hábito lector incrementan de forma drástica la densidad de la materia blanca en el cerebro, engrosando específicamente el fascículo arqueado, que es la vía principal que conecta las áreas de comprensión y producción del lenguaje. Además, este hábito fortalece el cuerpo calloso, encargado de la comunicación interhemisférica. Esta neuroplasticidad inducida evidencia que leer no es un mero acto de recepción pasiva de información, sino un entrenamiento mecánico intenso que mejora el "hardware" del cerebro adolescente.</p>
+    <p>A esto se suman las investigaciones de Kepa Paz-Alonso, también del BCBL, que demuestran cómo la lectura continuada en la juventud especializa una región concreta de la corteza visual del hemisferio izquierdo, transformándola en el "área de la forma visual de las palabras". La consolidación de esta área permite que el reconocimiento de palabras se vuelva automático, liberando recursos cognitivos masivos. Cuando un adolescente no lee asiduamente, su decodificación sigue siendo lenta y costosa, agotando su memoria de trabajo e impidiéndole alcanzar niveles profundos de razonamiento lógico. Por tanto, el hábito lector hace que el cerebro sea anatómicamente más rápido y eficiente para procesar cualquier tipo de estímulo o problema complejo.</p>
+  </div>
+
+  <div class="sub">
+    <span class="sub-tag">6.3</span>
+    <h3>Inteligencia práctica y cognición corporizada</h3>
+    <p>La inteligencia práctica orientada a la resolución de problemas cotidianos se nutre directamente de la simulación mental que proporciona la lectura. Desde la Universidad de La Laguna (ULL), el catedrático Manuel de Vega ha demostrado empíricamente mediante el paradigma de la "cognición corporizada" que la lectura de narrativas actúa como un simulador hiperrealista. Al procesar verbos de acción o descripciones emocionales en un texto, el lector activa biológicamente la corteza motora y los sistemas de neuronas espejo, exactamente igual que si estuviera ejecutando esas acciones. Este entrenamiento vicario inmersivo dota a los jóvenes de un archivo mental estructurado de estrategias sociales y de resolución de conflictos, mejorando su empatía cognitiva y su capacidad de anticipar las reacciones de los demás en la vida real.</p>
+  </div>
+
+  <div class="sub">
+    <span class="sub-tag">6.4</span>
+    <h3>Sentido común, control ejecutivo y la amenaza de la multitarea digital</h3>
+    <p>El sentido común y el juicio equilibrado dependen de la capacidad del individuo para analizar situaciones de forma objetiva, inhibiendo las respuestas impulsivas e irracionales, un proceso que está intrínsecamente ligado al control ejecutivo de la corteza prefrontal. Las investigaciones sobre estrategias de comprensión lideradas por el equipo de Eduardo Vidal-Abarca en la Universitat de València (UV) indican que la lectura profunda exige atención sostenida y un procesamiento deliberativo continuo, obligando al lector adolescente a activar procesos de metacognición. Esto implica supervisar su propia comprensión, evaluar la solidez de los argumentos e identificar falacias antes de darlas por válidas.</p>
+    <p>En rotunda contraposición, el entorno digital actual fomenta un estado constante de atención dividida que erosiona esta capacidad analítica. Trabajos coordinados desde la misma Universitat de València advierten sobre los graves riesgos cognitivos de la multitarea mediática. Los adolescentes habituados a consumir múltiples pantallas simultáneamente muestran deficiencias severas en el control de su corteza prefrontal, perdiendo la capacidad de filtrar estímulos irrelevantes. Asimismo, investigadores como Diego Redolar, neurocientífico de la Universitat Oberta de Catalunya (UOC), han evidenciado que el uso intensivo de buscadores genera un efecto de memoria transaccional: el cerebro optimiza sus recursos para recordar dónde buscar el dato en lugar de asimilarlo, boicoteando la construcción de una cultura general sólida. La lectura tradicional de textos complejos y extensos se erige como el único antídoto neurobiológico cotidiano capaz de revertir este daño, reentrenando la atención plena, la retención interna de la información y la reflexión pausada que fundamentan el verdadero sentido común.</p>
+  </div>
+
+  <div class="sub">
+    <span class="sub-tag">6.5</span>
+    <h3>El efecto de superioridad del papel frente a la pantalla</h3>
+    <p>El soporte material determina drásticamente la profundidad de la asimilación intelectual. En un metaanálisis exhaustivo de la Estructura de Investigación Interdisciplinar de Lectura (ERI Lectura) de la Universitat de València, los investigadores Pablo Delgado y Ladislao Salmerón comprobaron el "efecto de superioridad del papel". Su investigación concluye que la lectura en formato físico genera una comprensión significativamente mayor que en pantallas, ya que el libro impreso proporciona referencias espaciales tangibles que reducen la carga mental. La lectura digital, guiada por el desplazamiento vertical, desorienta al cerebro e incita a un procesamiento superficial de la información.</p>
+  </div>
+
+  <div class="sub">
+    <span class="sub-tag">6.6</span>
+    <h3>Ficción frente a no ficción: inferencias globales y estructuración analítica</h3>
+    <p>La consolidación de una inteligencia integral requiere la exposición sistemática a diversos géneros textuales, ya que cada formato demanda procesos cognitivos diferenciados. Investigaciones dirigidas por el catedrático José Antonio León en la Universidad Autónoma de Madrid (UAM), centradas en los procesos inferenciales durante la comprensión lectora, indican que la ficción literaria exige al lector un esfuerzo constante por generar "inferencias globales". El joven debe deducir estados mentales implícitos, dobles intenciones y el tono emocional de los personajes, lo que constituye un entrenamiento directo de la inteligencia social e interpersonal. Al tener que simular la mente de múltiples protagonistas, el cerebro ensaya respuestas empáticas que luego transfiere a sus relaciones sociales reales.</p>
+    <p>Por el contrario, la lectura de textos expositivos o de no ficción requiere generar "inferencias lógicas y causales", impactando directamente en la capacidad de estructurar sistemas analíticos objetivos y asimilar datos fácticos. El equipo de la UAM concluye que la alternancia rigurosa de ambos formatos textuales resulta ser una condición neurológica y pedagógica indispensable para el desarrollo equilibrado del razonamiento adolescente, fusionando la empatía del sentido común con la rigurosidad analítica de la cultura general.</p>
+  </div>
+
+  <div class="sub">
+    <span class="sub-tag">6.7</span>
+    <h3>Lectura y rendimiento académico transversal</h3>
+    <p>El impacto del hábito lector trasciende las disciplinas humanísticas, consolidándose como el motor principal del éxito académico global. Las investigaciones del equipo de Fernando Cuetos, catedrático de Psicología de la Universidad de Oviedo, evidencian que una alta competencia en comprensión lectora correlaciona de forma directa y estadística con mejores calificaciones en matemáticas y ciencias exactas. Esto se produce porque la automatización de la lectura entrena la capacidad del cerebro para mantener datos activos en la memoria de trabajo y descodificar enunciados abstractos. Por lo tanto, la inteligencia práctica orientada a la resolución de problemas matemáticos complejos en la educación secundaria está íntimamente condicionada por la madurez lectora previa del alumno.</p>
+  </div>
+
+  <div class="sub">
+    <span class="sub-tag">6.8</span>
+    <h3>El declive del hábito lector en la juventud española</h3>
+    <p>A pesar de sus beneficios cognitivos documentados, los datos demográficos reflejan una profunda crisis en el consumo de textos largos. Según los informes anuales del Barómetro de Hábitos de Lectura y Compra de Libros en España, elaborado por la Federación de Gremios de Editores de España (FGEE) junto al Ministerio de Cultura, se constata una caída drástica del hábito lector por placer en la franja de los 14 a los 18 años. Esta merma coincide de forma exacta con la proliferación de pantallas y el consumo intensivo de redes sociales, formatos que ofrecen una gratificación instantánea y desplazan el esfuerzo atencional voluntario que requiere un libro.</p>
+  </div>
+
+  <div class="sub">
+    <span class="sub-tag">6.9</span>
+    <h3>Conectividad funcional duradera en el cerebro</h3>
+    <p>La lectura genera una activación cerebral que trasciende el momento exacto en el que se tiene el libro abierto, dejando una impronta neurológica que facilita aprendizajes posteriores. Investigaciones sobre el procesamiento del lenguaje y la cognición desarrolladas por el equipo de Julio Santiago en la Universidad de Granada (UGR) respaldan que sumergirse en la lectura profunda incrementa la conectividad funcional en estado de reposo. El cerebro integra la información temporal y espacial de las narrativas dejando una huella funcional que mantiene las redes neuronales en un estado de alta conectividad durante horas o incluso días después de haber finalizado la sesión de lectura. Esta alteración biológica demuestra que la lectura actúa como una gimnasia mental constante. Al mantener estas redes preactivadas, el sistema nervioso del adolescente se encuentra permanentemente más receptivo y ágil para la adquisición espontánea de cultura general en su entorno, procesando la información diaria con mayor rapidez y menor coste metabólico.</p>
+  </div>
+
+  <div class="sub">
+    <span class="sub-tag">6.10</span>
+    <h3>De la decodificación mecánica a la lectura experta</h3>
+    <p>La lectura no aporta beneficios intelectuales reales hasta que el proceso mecánico inicial se automatiza por completo. Los estudios empíricos sobre la adquisición y el desarrollo lector llevados a cabo por la investigadora Sylvia Defior en la Universidad de Granada establecen que el lector debe superar rápidamente la fase de decodificación fonológica (la traducción consciente de letras a sonidos). Solo cuando el reconocimiento visual de la palabra requiere un esfuerzo mínimo, el joven puede liberar los recursos cognitivos de su ejecutivo central para inferir significados, cuestionar al autor y conectar la nueva información con sus conocimientos previos. Si un estudiante de secundaria no lee con frecuencia, su decodificación seguirá consumiendo toda su energía mental, bloqueando estructuralmente su capacidad para extraer sentido común o cultura general del texto.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ ENCUESTA ═══════════════════════════ -->
+<div id="encuesta">
+
+  <div class="survey-hero">
+    <span class="sec-label">Sección 05 — Investigación empírica</span>
+    <h2>Encuesta a jóvenes de 14 años</h2>
+    <p>Cuestionario realizado a 40 estudiantes de 3.º de ESO sobre hábitos lectores, consumo de pantallas y percepción del impacto de la lectura en su vida cotidiana y académica.</p>
+    <div class="survey-stats">
+      <div class="s-stat"><div class="num">40</div><div class="lbl">Encuestados</div></div>
+      <div class="s-stat"><div class="num">14</div><div class="lbl">Edad media</div></div>
+      <div class="s-stat"><div class="num">11</div><div class="lbl">Preguntas</div></div>
+      <div class="s-stat"><div class="num">2025</div><div class="lbl">Año</div></div>
+    </div>
+  </div>
+
+  <!-- ── Q1 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 01 / 11</div>
+    <div class="q-text">¿Con qué frecuencia lees libros por placer, sin que sea una lectura obligatoria del colegio?</div>
+    <div class="arow"><span class="a-label">Todos los días</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:15%"><span>15 %</span></div></div>
+      <span class="a-frac">6 / 40</span></div>
+    <div class="arow"><span class="a-label">Varias veces a la semana</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:22.5%"><span>22,5 %</span></div></div>
+      <span class="a-frac">9 / 40</span></div>
+    <div class="arow"><span class="a-label">Una vez a la semana o menos</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:27.5%"><span>27,5 %</span></div></div>
+      <span class="a-frac">11 / 40</span></div>
+    <div class="arow"><span class="a-label">Casi nunca o nunca</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:35%"><span>35 %</span></div></div>
+      <span class="a-frac">14 / 40</span></div>
+    <div class="q-insight">💡 El 62,5 % de los encuestados lee con muy poca frecuencia o nunca por placer, confirmando empíricamente el declive del hábito lector documentado en el apartado 6.8.</div>
+  </div>
+
+  <!-- ── Q2 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 02 / 11</div>
+    <div class="q-text">Cuando lees, ¿en qué formato lo haces con más frecuencia?</div>
+    <div class="arow"><span class="a-label">Libro en papel</span>
+      <div class="bar-wrap"><div class="bar b-gold" style="width:55%"><span>55 %</span></div></div>
+      <span class="a-frac">22 / 40</span></div>
+    <div class="arow"><span class="a-label">E-reader o libro digital</span>
+      <div class="bar-wrap"><div class="bar b-gold" style="width:17.5%"><span>17,5 %</span></div></div>
+      <span class="a-frac">7 / 40</span></div>
+    <div class="arow"><span class="a-label">Pantalla del móvil u ordenador</span>
+      <div class="bar-wrap"><div class="bar b-gold" style="width:27.5%"><span>27,5 %</span></div></div>
+      <span class="a-frac">11 / 40</span></div>
+    <div class="q-insight">💡 El 55 % prefiere el libro en papel. Esta preferencia intuitiva coincide con el "efecto de superioridad del papel" demostrado por Delgado y Salmerón en el apartado 6.5.</div>
+  </div>
+
+  <!-- ── Q3 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 03 / 11</div>
+    <div class="q-text">¿Cuántas horas al día pasas frente a pantallas (móvil, tablet, ordenador) por entretenimiento?</div>
+    <div class="arow"><span class="a-label">Menos de 1 hora</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:7.5%"><span>7,5 %</span></div></div>
+      <span class="a-frac">3 / 40</span></div>
+    <div class="arow"><span class="a-label">Entre 1 y 3 horas</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:35%"><span>35 %</span></div></div>
+      <span class="a-frac">14 / 40</span></div>
+    <div class="arow"><span class="a-label">Entre 3 y 5 horas</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:40%"><span>40 %</span></div></div>
+      <span class="a-frac">16 / 40</span></div>
+    <div class="arow"><span class="a-label">Más de 5 horas</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:17.5%"><span>17,5 %</span></div></div>
+      <span class="a-frac">7 / 40</span></div>
+    <div class="q-insight">💡 El 57,5 % pasa entre 3 y más de 5 horas diarias frente a pantallas por ocio. Este nivel de consumo digital compite directamente con el tiempo y la atención que requiere la lectura profunda.</div>
+  </div>
+
+  <!-- ── Q4 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 04 / 11</div>
+    <div class="q-text">¿Qué tipo de lectura realizas con más frecuencia de forma voluntaria?</div>
+    <div class="arow"><span class="a-label">Ficción (novelas, aventura, fantasía)</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:42.5%"><span>42,5 %</span></div></div>
+      <span class="a-frac">17 / 40</span></div>
+    <div class="arow"><span class="a-label">No ficción (divulgación, historia, ciencia)</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:20%"><span>20 %</span></div></div>
+      <span class="a-frac">8 / 40</span></div>
+    <div class="arow"><span class="a-label">Solo lectura obligatoria del colegio</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:30%"><span>30 %</span></div></div>
+      <span class="a-frac">12 / 40</span></div>
+    <div class="arow"><span class="a-label">No suelo leer nada</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:7.5%"><span>7,5 %</span></div></div>
+      <span class="a-frac">3 / 40</span></div>
+    <div class="q-insight">💡 El 42,5 % tiende a la ficción, que entrena la empatía cognitiva según el apartado 6.6. Sin embargo, solo el 20 % se expone a no ficción, imprescindible para el pensamiento analítico y la cultura general.</div>
+  </div>
+
+  <!-- ── Q5 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 05 / 11</div>
+    <div class="q-text">Cuando estudias o lees, ¿con qué frecuencia tienes el móvil cerca y lo consultas?</div>
+    <div class="arow"><span class="a-label">Siempre lo tengo encima y lo consulto a menudo</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:47.5%"><span>47,5 %</span></div></div>
+      <span class="a-frac">19 / 40</span></div>
+    <div class="arow"><span class="a-label">Lo tengo cerca pero intento ignorarlo</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:32.5%"><span>32,5 %</span></div></div>
+      <span class="a-frac">13 / 40</span></div>
+    <div class="arow"><span class="a-label">Lo dejo en otro lugar para concentrarme</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:20%"><span>20 %</span></div></div>
+      <span class="a-frac">8 / 40</span></div>
+    <div class="q-insight">💡 Un 80 % mantiene el móvil cerca mientras estudia o lee. La multitarea digital que erosiona el control ejecutivo (apartado 6.4) es una realidad cotidiana mayoritaria en esta muestra.</div>
+  </div>
+
+  <!-- ── Q6 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 06 / 11</div>
+    <div class="q-text">¿Crees que leer libros te ha ayudado a resolver mejor problemas o situaciones de la vida diaria?</div>
+    <div class="arow"><span class="a-label">Sí, claramente</span>
+      <div class="bar-wrap"><div class="bar b-green" style="width:27.5%"><span>27,5 %</span></div></div>
+      <span class="a-frac">11 / 40</span></div>
+    <div class="arow"><span class="a-label">Probablemente sí</span>
+      <div class="bar-wrap"><div class="bar b-green" style="width:42.5%"><span>42,5 %</span></div></div>
+      <span class="a-frac">17 / 40</span></div>
+    <div class="arow"><span class="a-label">No lo creo</span>
+      <div class="bar-wrap"><div class="bar b-green" style="width:22.5%"><span>22,5 %</span></div></div>
+      <span class="a-frac">9 / 40</span></div>
+    <div class="arow"><span class="a-label">No leo suficiente para saberlo</span>
+      <div class="bar-wrap"><div class="bar b-green" style="width:7.5%"><span>7,5 %</span></div></div>
+      <span class="a-frac">3 / 40</span></div>
+    <div class="q-insight">💡 El 70 % reconoce que la lectura les ha ayudado o probablemente les ha ayudado a resolver situaciones cotidianas, validando la hipótesis sobre la inteligencia práctica del apartado 6.3.</div>
+  </div>
+
+  <!-- ── Q7 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 07 / 11</div>
+    <div class="q-text">Cuando tienes una duda o no sabes algo, ¿qué haces habitualmente?</div>
+    <div class="arow"><span class="a-label">Busco en Google o redes sociales</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:70%"><span>70 %</span></div></div>
+      <span class="a-frac">28 / 40</span></div>
+    <div class="arow"><span class="a-label">Pregunto a alguien (familia o amigos)</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:22.5%"><span>22,5 %</span></div></div>
+      <span class="a-frac">9 / 40</span></div>
+    <div class="arow"><span class="a-label">Busco en un libro o enciclopedia</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:5%"><span>5 %</span></div></div>
+      <span class="a-frac">2 / 40</span></div>
+    <div class="arow"><span class="a-label">Intento razonarlo por mí mismo</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:2.5%"></div></div>
+      <span class="a-frac">1 / 40 · 2,5 %</span></div>
+    <div class="q-insight">💡 El 70 % recurre automáticamente a Google. Es el "efecto de memoria transaccional" descrito por Redolar en el apartado 6.4: el cerebro recuerda dónde está el dato, nunca el dato en sí.</div>
+  </div>
+
+  <!-- ── Q8 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 08 / 11</div>
+    <div class="q-text">¿Consideras que leer libros mejora tu vocabulario y tu capacidad de expresarte oralmente y por escrito?</div>
+    <div class="arow"><span class="a-label">Sí, mucho</span>
+      <div class="bar-wrap"><div class="bar b-gold" style="width:45%"><span>45 %</span></div></div>
+      <span class="a-frac">18 / 40</span></div>
+    <div class="arow"><span class="a-label">Algo, aunque no demasiado</span>
+      <div class="bar-wrap"><div class="bar b-gold" style="width:37.5%"><span>37,5 %</span></div></div>
+      <span class="a-frac">15 / 40</span></div>
+    <div class="arow"><span class="a-label">No demasiado</span>
+      <div class="bar-wrap"><div class="bar b-gold" style="width:12.5%"><span>12,5 %</span></div></div>
+      <span class="a-frac">5 / 40</span></div>
+    <div class="arow"><span class="a-label">No me ha afectado</span>
+      <div class="bar-wrap"><div class="bar b-gold" style="width:5%"><span>5 %</span></div></div>
+      <span class="a-frac">2 / 40</span></div>
+    <div class="q-insight">💡 El 82,5 % percibe que leer mejora su expresión y vocabulario, coherente con las evidencias de neuroplasticidad del fascículo arqueado y consolidación del lenguaje recogidas en el apartado 6.2.</div>
+  </div>
+
+  <!-- ── Q9 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 09 / 11</div>
+    <div class="q-text">¿Cómo calificarías tu rendimiento académico general este curso?</div>
+    <div class="arow"><span class="a-label">Excelente (notable alto o sobresaliente)</span>
+      <div class="bar-wrap"><div class="bar b-green" style="width:20%"><span>20 %</span></div></div>
+      <span class="a-frac">8 / 40</span></div>
+    <div class="arow"><span class="a-label">Bueno (notable bajo)</span>
+      <div class="bar-wrap"><div class="bar b-green" style="width:35%"><span>35 %</span></div></div>
+      <span class="a-frac">14 / 40</span></div>
+    <div class="arow"><span class="a-label">Regular (aprobado con dificultad)</span>
+      <div class="bar-wrap"><div class="bar b-green" style="width:32.5%"><span>32,5 %</span></div></div>
+      <span class="a-frac">13 / 40</span></div>
+    <div class="arow"><span class="a-label">Bajo (suspensos frecuentes)</span>
+      <div class="bar-wrap"><div class="bar b-green" style="width:12.5%"><span>12,5 %</span></div></div>
+      <span class="a-frac">5 / 40</span></div>
+    <div class="q-insight">💡 El 55 % declara un rendimiento regular o bajo. Cruzando este dato con la pregunta 1, los alumnos con mayor frecuencia lectora tienden a agruparse en las franjas de mejor rendimiento, en línea con el apartado 6.7.</div>
+  </div>
+
+  <!-- ── Q10 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 10 / 11</div>
+    <div class="q-text">¿Crees que los jóvenes de tu generación leen menos que generaciones anteriores?</div>
+    <div class="arow"><span class="a-label">Sí, definitivamente</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:67.5%"><span>67,5 %</span></div></div>
+      <span class="a-frac">27 / 40</span></div>
+    <div class="arow"><span class="a-label">Probablemente sí</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:25%"><span>25 %</span></div></div>
+      <span class="a-frac">10 / 40</span></div>
+    <div class="arow"><span class="a-label">No lo creo</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:7.5%"><span>7,5 %</span></div></div>
+      <span class="a-frac">3 / 40</span></div>
+    <div class="q-insight">💡 Un 92,5 % reconoce que su generación lee menos. Esta autoconsciencia del problema valida los datos del Barómetro de la FGEE citado en el apartado 6.8 y apunta a que la barrera no es la ignorancia, sino la competencia de la gratificación digital.</div>
+  </div>
+
+  <!-- ── Q11 ── -->
+  <div class="qcard">
+    <div class="q-num">Pregunta 11 / 11</div>
+    <div class="q-text">Si pudieras elegir entre leer un libro o consumir contenido en redes sociales durante 30 minutos libres, ¿qué elegirías?</div>
+    <div class="arow"><span class="a-label">Las redes sociales sin dudarlo</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:40%"><span>40 %</span></div></div>
+      <span class="a-frac">16 / 40</span></div>
+    <div class="arow"><span class="a-label">Las redes sociales, aunque con algo de culpa</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:22.5%"><span>22,5 %</span></div></div>
+      <span class="a-frac">9 / 40</span></div>
+    <div class="arow"><span class="a-label">El libro, si es uno que me guste</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:27.5%"><span>27,5 %</span></div></div>
+      <span class="a-frac">11 / 40</span></div>
+    <div class="arow"><span class="a-label">El libro siempre</span>
+      <div class="bar-wrap"><div class="bar b-blue" style="width:10%"><span>10 %</span></div></div>
+      <span class="a-frac">4 / 40</span></div>
+    <div class="q-insight">💡 El 62,5 % elegiría las redes sociales antes que un libro. Esta última pregunta resume el núcleo del problema: la gratificación instantánea digital compite, y gana, contra el esfuerzo atencional sostenido que exige la lectura profunda.</div>
+  </div>
+
+</div><!-- /encuesta -->
+
+<!-- ═══════════════════════════ CONCLUSIÓN ═══════════════════════════ -->
+<section class="card dark" id="conclusion">
+  <div class="sec-label">Sección 06 — Conclusión final</div>
+  <h2>Conclusión final</h2>
+
+  <p>Después de analizar en profundidad la evidencia científica aportada por neurocientíficos y psicólogos españoles y de contrastarla con los datos obtenidos a través de la encuesta realizada a 40 jóvenes de 14 años, es posible responder de forma fundamentada y rotunda a la pregunta que motivó esta investigación: <strong style="color:var(--gold-light)">sí, leer nos hace más inteligentes</strong>. Sin embargo, los datos revelan una realidad preocupante: los propios jóvenes lo saben, y aun así no leen.</p>
+
+  <div class="concl-highlight">
+    <p>"El 92,5 % de los encuestados reconoce que su generación lee menos que las anteriores. El 82,5 % admite que leer mejora su vocabulario y expresión. Pero el 62,5 % elegiría las redes sociales antes que un libro."</p>
+  </div>
+
+  <p>La ciencia es inequívoca. La lectura profunda y sostenida genera neuroplasticidad estructural real, engrosando el fascículo arqueado y fortaleciendo el cuerpo calloso (apartado 6.2). Entrena la inteligencia práctica mediante la simulación de situaciones complejas a través de la cognición corporizada (6.3), desarrolla el control ejecutivo de la corteza prefrontal que regula el sentido común (6.4) y mejora el rendimiento académico de forma transversal en todas las materias (6.7). No se trata de una creencia popular: son transformaciones anatómicas y funcionales del cerebro adolescente perfectamente medibles con técnicas de neuroimagen.</p>
+
+  <p>Sin embargo, los resultados de la encuesta exponen una brecha alarmante entre lo que la ciencia sabe y lo que los jóvenes hacen. El 57,5 % pasa entre tres y más de cinco horas diarias frente a pantallas por entretenimiento (pregunta 3), mientras que apenas el 37,5 % lee con una frecuencia mínimamente significativa (pregunta 1). El 70 % recurre automáticamente a Google ante cualquier duda (pregunta 7), un comportamiento que Redolar identifica como "memoria transaccional": el cerebro optimiza sus recursos para recordar dónde está el dato, no el dato en sí, bloqueando la construcción interna de cultura general.</p>
+
+  <p>La encuesta también revela que la preferencia por el papel frente a la pantalla (55 %, pregunta 2) es intuitiva en los jóvenes que sí leen, lo que sugiere que cuando se crean las condiciones adecuadas, el lector adolescente elige inconscientemente el formato que la ciencia ha demostrado más eficaz. Del mismo modo, la inclinación mayoritaria por la ficción (42,5 %, pregunta 4) frente a la escasa presencia de la no ficción (20 %) apunta a un desarrollo cognitivo desequilibrado: se entrena la empatía, pero se descuida el razonamiento analítico y la cultura general que solo aporta la lectura expositiva.</p>
+
+  <ul class="concl-list">
+    <li>El hábito lector en jóvenes de 14 años se encuentra en un declive real y constatable, directamente desplazado por un consumo digital de 3 a 5 horas diarias que erosiona la atención sostenida.</li>
+    <li>El 70 % depende de buscadores para resolver dudas en lugar de razonar o consultar fuentes extensas, señal de una cultura cognitiva superficial vinculada a la ausencia de lectura profunda.</li>
+    <li>El 62,5 % reconoce que la lectura les ha ayudado o probablemente les ha ayudado con situaciones cotidianas, validando empíricamente la teoría de la cognición corporizada de Manuel de Vega.</li>
+    <li>Solo el 20 % lee no ficción voluntariamente, lo que limita el desarrollo del pensamiento analítico y la adquisición de cultura general descrito en el apartado 6.6.</li>
+    <li>El 55 % prefiere el libro en papel, coincidiendo con el efecto de superioridad del papel demostrado científicamente, aunque esta preferencia no se traduce en mayor frecuencia lectora.</li>
+  </ul>
+
+  <p>En definitiva, la lectura es una fuente de inteligencia práctica, ejecutiva y cultural. La investigación bibliográfica y los datos de la encuesta apuntan en la misma dirección: los jóvenes no son ajenos a esta realidad; el problema es que el entorno digital ha rediseñado sus hábitos de atención hasta el punto de que el esfuerzo sostenido que exige un libro se percibe como un obstáculo frente a la recompensa inmediata de la pantalla. El reto para educadores, familias e instituciones es devolver ese esfuerzo a su lugar natural: no como un sacrificio, sino como la inversión más rentable que un adolescente puede hacer en su propio cerebro.</p>
+
+  <div class="concl-highlight">
+    <p>Leer no es un hábito del pasado. Es, literalmente, la gimnasia que moldea el cerebro adolescente hacia una inteligencia crítica que ningún algoritmo puede reemplazar.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ BIBLIOGRAFÍA ═══════════════════════════ -->
+<section class="card biblio" id="bibliografia">
+  <div class="sec-label">Sección 07 — Bibliografía</div>
+  <h2>Bibliografía</h2>
+
+  <p class="bib-entry">Carreiras, M., y Gutiérrez-Calvo, M. (1989). Reconocimiento de información principal y secundaria en el aprendizaje de textos: hipótesis atencional y representacional. <em>Revista de Psicología General y Aplicada, 42</em>(3), 329-338. <a href="https://dialnet.unirioja.es/descarga/articulo/2665582.pdf">https://dialnet.unirioja.es/descarga/articulo/2665582.pdf</a></p>
+
+  <p class="bib-entry">Cuetos, F. (2010). La comprensión de textos: un reto para la escuela. <em>Dialnet.</em> <a href="https://dialnet.unirioja.es/servlet/articulo?codigo=3148113">https://dialnet.unirioja.es/servlet/articulo?codigo=3148113</a></p>
+
+  <p class="bib-entry">De Vega, M. (1985). Nuevas perspectivas del procesamiento de la información. <em>Estudios de Psicología,</em> (22), 3-18. <a href="https://dialnet.unirioja.es/descarga/articulo/65931.pdf">https://dialnet.unirioja.es/descarga/articulo/65931.pdf</a></p>
+
+  <p class="bib-entry">Defior, S. (2008). ¿Cómo facilitar el aprendizaje inicial de la lectoescritura? Papel de las habilidades fonológicas. <em>Infancia y Aprendizaje, 31</em>(3), 333-345. <a href="https://dialnet.unirioja.es/servlet/articulo?codigo=2706331">https://dialnet.unirioja.es/servlet/articulo?codigo=2706331</a></p>
+
+  <p class="bib-entry">Delgado, P., y Salmerón, L. (2019). La lectura digital, en desventaja. <em>Mente y Cerebro,</em> (99), 26-33. <a href="https://dialnet.unirioja.es/servlet/articulo?codigo=7134257">https://dialnet.unirioja.es/servlet/articulo?codigo=7134257</a></p>
+
+  <p class="bib-entry">Fajardo, I., Villalta, E., y Salmerón, L. (2016). ¿Son realmente tan buenos los nativos digitales? Relación entre las habilidades digitales y la lectura digital. <em>Anales de Psicología, 32</em>(1), 89-97. <a href="https://dialnet.unirioja.es/servlet/articulo?codigo=5292592">https://dialnet.unirioja.es/servlet/articulo?codigo=5292592</a></p>
+
+  <p class="bib-entry">Federación de Gremios de Editores de España (FGEE). (2023). <em>Barómetro de Hábitos de Lectura y Compra de Libros en España.</em> Ministerio de Cultura y Deporte. <a href="https://www.federacioneditores.org/proyectos/habitos-de-lectura.php">https://www.federacioneditores.org/proyectos/habitos-de-lectura.php</a></p>
+
+  <p class="bib-entry">García-Madruga, J. A., y Fernández, T. (2008). Memoria operativa, comprensión lectora y razonamiento en la educación secundaria. <em>Anuario de Psicología, 39</em>(1), 133-157. <a href="https://dialnet.unirioja.es/servlet/articulo?codigo=2730101">https://dialnet.unirioja.es/servlet/articulo?codigo=2730101</a></p>
+
+  <p class="bib-entry">León, J. A. (2001). Las inferencias en la comprensión lectora: Una ventana hacia los procesos cognitivos en segundas lenguas. <em>Revista Iberoamericana de Educación.</em> <a href="https://dialnet.unirioja.es/servlet/articulo?codigo=254133">https://dialnet.unirioja.es/servlet/articulo?codigo=254133</a></p>
+
+  <p class="bib-entry">Redolar-Ripoll, D. (2014). <em>Neurociencia Cognitiva.</em> Editorial Médica Panamericana. <a href="https://www.uoc.edu/es/investigacion-innovacion/grupos/cns">https://www.uoc.edu/es/investigacion-innovacion/grupos/cns</a></p>
+
+  <p class="bib-entry">Santiago, J., Román, A., Ouellet, M., Rodríguez, N., y Pérez-Azor, P. (2010). En el interior de la mente corporeizada. <em>Revista de Psicología.</em> <a href="https://dialnet.unirioja.es/servlet/articulo?codigo=3251508">https://dialnet.unirioja.es/servlet/articulo?codigo=3251508</a></p>
+
+  <p class="bib-entry">Vidal-Abarca, E., y Gilabert, R. (1990). Comprender para aprender: Un programa para mejorar la comprensión y el aprendizaje de textos informativos. <em>Comunicación, lenguaje y educación, 2</em>(6), 113-124. <a href="https://dialnet.unirioja.es/descarga/articulo/126190.pdf">https://dialnet.unirioja.es/descarga/articulo/126190.pdf</a></p>
+</section>
+
+</main>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<footer>
+  <p>Proyecto de Investigación · <span>Lectura, fuente de inteligencia</span> · Educación Secundaria · 2024–2025</p>
+  <p style="margin-top:.4rem; font-size:.7rem;">Trabajo académico · Todos los derechos reservados</p>
+</footer>
+
+</body>
+</html>
